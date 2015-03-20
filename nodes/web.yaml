@@ -1,6 +1,6 @@
 heat_template_version: 2013-05-23
 
-description: Simple template to deploy a single compute instance
+description: Deploy a single compute instance with a floating IP
 
 parameters:
   key_name:
@@ -22,18 +22,18 @@ parameters:
     type: string
     label: Network name or ID
     description: Network to attach server to.
-    default: demo-network
+    default: web-network
   public_network:
     type: string
     label: Provider Network UUID
     description: Network to attach server to.
     default: 40c7952c-43e8-45b9-9b78-eae5bf89cbff
 
-
 resources:
-  my_instance:
+  web:
     type: OS::Nova::Server
     properties:
+      name: web
       key_name: { get_param: key_name }
       image: { get_param: image_id }
       flavor: { get_param: instance_type }
@@ -47,4 +47,4 @@ resources:
     type: OS::Neutron::FloatingIPAssociation
     properties:
       floatingip_id: { get_resource: floating_ip }
-      port_id: { get_attr: [my_instance, addresses, demo-network, 0, port] }
+      port_id: { get_attr: [web, addresses, web-network, 0, port] }
